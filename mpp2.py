@@ -1,4 +1,8 @@
+import random
+
 # wczytaj dane z pliku
+
+
 def wczytaj_dane(plik):
     with open(plik, 'r') as f:
         lines = f.readlines()
@@ -35,3 +39,40 @@ def delta_train(training_data, learning_rate, epochs):
 
 def predict(weights, attributes):
     return 'Iris-setosa' if sum([attributes[i] * weights[i] for i in range(len(weights))]) > 0 else 'Iris-versicolor_or_virginica'
+
+
+def test_perceptron(test_data, weights):
+    correct = 0
+    for attributes, decision in test_data:
+        prediction = predict(weights, attributes)
+        if prediction == 'Iris-setosa' and decision == 'Iris-setosa':
+            correct += 1
+        elif prediction == 'Iris-versicolor_or_virginica' and decision != 'Iris-setosa':
+            correct += 1
+
+    accuracy = (correct / len(test_data)) * 100
+    return correct, accuracy
+
+
+# Train the perceptron
+learning_rate = 0.1
+epochs = 100
+weights = delta_train(train_data, learning_rate, epochs)
+
+# Test the perceptron
+correct, accuracy = test_perceptron(test_data, weights)
+print(f'Number of correctly classified examples: {correct}')
+print(f'Accuracy: {accuracy:.2f}%')
+
+# Manual input
+while True:
+    try:
+        input_str = input(
+            'Enter attribute values (comma-separated) or "q" to quit: ')
+        if input_str.lower() == 'q':
+            break
+
+        input_attributes = [float(x.strip()) for x in input_str.split(',')]
+        print(f'Classification result: {predict(weights, input_attributes)}')
+    except Exception as e:
+        print('Error:', e)
